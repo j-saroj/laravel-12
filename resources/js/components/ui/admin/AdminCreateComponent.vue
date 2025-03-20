@@ -30,7 +30,14 @@
                             <div class="col-span-full">
                             <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                             <div class="mt-2">
-                                <textarea v-model="newBlog.content" required name="content" id="content" rows="3" class="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-700 dark:text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"></textarea>
+                             <div class="mt-2">
+                                <textarea
+                                    name="content"
+                                    id="content"
+                                    class="w-full h-48 rounded text-gray-600 p-4"
+                                    v-model="newBlog.content"
+                                    placeholder="Write Content Here......"></textarea>
+                            </div>
                             </div>
                             </div>
 
@@ -38,7 +45,7 @@
                             <label for="published_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Published Date</label>
                             <input v-model="newBlog.published_at" required type="date" id="published_at" name="published_at" class="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-700 dark:text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" />
                             </div>
-                            
+
                         </div>
                         </div>
                     </div>
@@ -62,8 +69,11 @@ import { ref, onMounted, watch } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import { useBlogStore } from '@/stores/blogStore'; // Import the store
+// import Editor from '@/components/Editor.vue'; // Import the Editor component
 
-const toast = useToast(); 
+
+const toast = useToast();
 const props = defineProps({
   open: {
     type: Boolean,
@@ -85,7 +95,7 @@ const showPassword = () => {
 const emit = defineEmits(['close','fetchBlogs']);
 
 const closeDialog = () => {
-  emit('close','fetchBlogs');
+  emit('close');
 };
 
 
@@ -109,43 +119,21 @@ const getUser = async () => {
 
 onMounted(() => {
     getUser(); // Fetch the user on component mount
-    
+
 });
 
-
+const blogStore = useBlogStore(); // Use the store
 
 const createBlog = async () => {
-    try {
-        // Send the request to create the blog
-        const response = await axios.post('/admin/blogs', newBlog.value, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // On success
-        toast.success('Blog created successfully!');
-
-        // Emit an event to notify the parent component
-        emit('fetchBlogs'); // Add this line
-
-        // Reset the form
+       await blogStore.createBlog(newBlog.value); // Use the store to create a new blog
         newBlog.value = { title: '', content: '', published_at: '', status: false, user_id: null };
+    closeDialog();
+    getUser(); // Fetch the user on component mount
 
-        // Close the dialog
-        closeDialog();
-
-    } catch (error) {
-        if (error.response && error.response.data.error) {
-            toast.error(error.response.data.error); // Show error from backend
-        } else {
-            toast.error('An unexpected error occurred', {
-                style: {
-                    color: 'red',
-                    backgroundColor: '#f8d7da',
-                },
-            });
-        }
-    }
 };
+
+
+
+
+
 </script>

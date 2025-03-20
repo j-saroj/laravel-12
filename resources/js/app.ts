@@ -8,6 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { initializeTheme } from './composables/useAppearance';
 import Toast, { POSITION } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import { createPinia } from 'pinia';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -15,13 +16,13 @@ declare module 'vite/client' {
         readonly VITE_APP_NAME: string;
         [key: string]: string | boolean | undefined;
     }
-    
+
     interface ImportMeta {
         readonly env: ImportMetaEnv;
         readonly glob: <T>(pattern: string) => Record<string, () => Promise<T>>;
     }
 }
-
+const pinia = createPinia();
 const appName = import.meta.env.VITE_APP_NAME || 'Website';
 
 createInertiaApp({
@@ -33,9 +34,10 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(Toast, {
                 position: POSITION.TOP_RIGHT, // Default position for the toast
-                
+
                 timeout: 5000, // Toast will disappear after 5 seconds
             })
+            .use(pinia)
             .mount(el);
     },
     progress: {

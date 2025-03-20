@@ -23,28 +23,14 @@ class BlogController extends Controller
         return Inertia::render('Admin/Blogs', ['blogs' => $blogs]);
         // return response()->json(['blogs' => $blogs]);
     }
+    public function fetchall()
+    {
+        $blogs = Blog::latest()->get();
 
-    // Store new blog
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //     'title' => 'required|string|max:255',
-    //     'content' => 'required|string',
-    //     'published_at' => 'nullable|date',
-    //     'user_id' => 'required|exists:users,id',
-    //     'status' => 'boolean',
-    // ]);
+    return response()->json(['blogs' => $blogs]);
+}
 
-    // try {
-    //     // Create the blog post
-    //     Blog::create($validated);
 
-    //     return response()->json(['message' => 'Blog created successfully!',], 201);
-    // } catch (\Exception $e) {
-    //     // Return error with the message
-    //     return response()->json(['error' => 'Blog cannot be created!',$e], 500);
-    // }
-    // }
 public function store(Request $request)
 {
     // Validate the request data
@@ -94,17 +80,31 @@ public function store(Request $request)
     }
 
     // Delete blog
-    public function destroy(Blog $blog)
+    public function destroy($blogId)
     {
         try {
-                     
+            $blog = Blog::findOrFail($blogId);
             $blog->delete();
 
         return response()->json(['message' => 'Blog Deleted successfully!'], 201);
     } catch (\Exception $e) {
         // Return error with the message
-        dd($e);
         return response()->json(['error' => 'Blog cannot be Deleted!'], 500);
     }
     }
+
+    public function search(Request $request)
+{
+    // Get the search query from the request
+    $query = $request->input('query');
+
+    // Search blogs by title or content
+    $blogs = Blog::where('title', 'like', "%{$query}%")
+                 ->orWhere('content', 'like', "%{$query}%")
+                 ->latest()
+                 ->get();
+
+    // Return the filtered blogs
+    return response()->json(['filteredBlogs' => $blogs]);
+}
 }

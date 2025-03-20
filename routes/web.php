@@ -18,10 +18,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
 
     // Blogs route
     Route::get('blogs', [BlogController::class, 'adminIndex'])->name('admin.blogs');
+    Route::get('blogs/all', [BlogController::class, 'fetchall'])->name('admin.blogs.all');
+    Route::get('blogs/search', [BlogController::class, 'search']);
         Route::post('blogs', [BlogController::class, 'store'])->name('blogs.store');
-    
+
     Route::get('user',[UserController::class,'index'])->name('user');
-    Route::delete('blogs/{blog}', [BlogController::class, 'destroy'])->name('blogs.destroy');
+    Route::delete('blogs/{blogId}', [BlogController::class, 'destroy'])->name('blogs.destroy');
 });
 
 

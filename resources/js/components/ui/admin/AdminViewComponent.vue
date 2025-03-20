@@ -51,15 +51,6 @@ const props = defineProps({
     },
     blog: Object, // Accept the blog object
 });
-const passwordElementToggle = ref('Show');
-
-const showPassword = () => {
-    const passwordElement = document.getElementById('password');
-    passwordElement.type = passwordElement.type === 'password' ? 'text' : 'password';
-    passwordElement.type == 'password' ? passwordElementToggle.value = "password" : 'text';
-    passwordElementToggle.value = passwordElement.type === 'password' ? 'Show' : 'Hide';
-};
-
 const emit = defineEmits(['close']);
 
 const closeDialog = () => {

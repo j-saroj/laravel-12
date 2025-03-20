@@ -33,9 +33,4 @@ class Blog extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Scope to filter published blogs
-    public function scopePublished($query)
-    {
-        return $query->where('status', true)->whereNotNull('published_at')->where('published_at', '<=', now());
-    }
 }
